@@ -1,0 +1,85 @@
+import streamlit as st
+import pandas as pd
+from controller.load import find_all_products
+
+st.sidebar.title("Menu")
+page_client = st.sidebar.selectbox(
+    "Escolha qual a ação:",("Consultar",))
+
+if page_client == "Consultar":
+    # Exibir produtos cadastrados
+    st.title("Produtos Disponíveis")
+
+    produtos = find_all_products()
+
+    if produtos:
+        productList = []
+        for item in produtos:
+            productList.append({
+                "ID": item.id, 
+                "Descrição": item.nome,
+                "Código": item.codigo,
+                "Preço": item.preco,
+                "Marca": item.marca,
+                "Situação": item.situacao
+            })
+
+        df = pd.DataFrame(productList)
+        edited_df = st.data_editor(df)
+
+
+
+        ====================================================
+
+        import streamlit as st
+import pandas as pd
+from st_aggrid import AgGrid
+from st_aggrid.grid_options_builder import GridOptionsBuilder
+from controller.dataset import find_all_products, find_all_category, find_all_stock
+
+
+
+
+st.sidebar.title("Menu")
+page_client = st.sidebar.selectbox(
+    "Escolha qual a ação:", ("Consultar",))
+
+if page_client == "Consultar":
+    # Exibir produtos cadastrados
+    st.title("Produtos Disponíveis")
+
+    produtos = find_all_products()
+
+    if produtos:
+        productList = []
+        for item in produtos:
+            productList.append({
+                "ID": item.id,
+                "Descrição": item.nome,
+                "Código": item.codigo,
+                "Preço": item.preco,
+                "Marca": item.marca,
+                "Situação": item.situacao
+            })
+
+        df = pd.DataFrame(productList)
+
+        # Configurando o AgGrid para permitir edição
+        gb = GridOptionsBuilder.from_dataframe(df)
+        gb.configure_pagination()
+        gb.configure_default_column(editable=True)
+        grid_options = gb.build()
+
+        # Exibindo o DataFrame no AgGrid com um tema válido
+        edited_df = AgGrid(
+            df,
+            gridOptions=grid_options,
+            editable=True,
+            theme='material',  # Usando um tema válido
+            height=400,
+            width='100%',
+        )
+
+        # Mostrar DataFrame editado
+        st.write("DataFrame editado:")
+        st.dataframe(edited_df['data'])
